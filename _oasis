@@ -1,0 +1,32 @@
+#								-*-conf-*-
+OASISFormat: 0.2
+Name:        root1d
+Version:     0.2
+Synopsis:    Find roots of 1D functions.
+Description: Collection of functions to seek roots of functions float -> float.
+Authors:     Christophe Troestler <Christophe.Troestler@umons.ac.be>
+License:     LGPL-3.0 with OCaml linking exception
+Homepage:    http://forge.ocamlcore.org/projects/archimedes/
+Plugins:     META (0.2), StdFiles (0.2)
+
+Library "root1d"
+  Path: src
+  BuildTools:   ocamlbuild
+  Modules:      Root1D
+
+
+# Executable "root1D_test"
+#   Path:         tests
+#   BuildTools:   ocamlbuild
+#   MainIs:       root1D_test.ml
+#   BuildDepends: root1d
+#   Install:      false
+
+
+Document API
+  Title:           API reference for Root1d
+  Type:            OCamlbuild (0.2)
+  InstallDir:      $docdir/api
+  BuildTools:      ocamldoc, ocamlbuild
+  XOCamlbuildPath: src
+  XOCamlbuildLibraries: root1d

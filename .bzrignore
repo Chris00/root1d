@@ -1,0 +1,12 @@
+_build
+*.byte
+*.odocl
+*.mllib
+*.data
+*.log
+*.txt
+*.shar
+_tags
+META
+myocamlbuild.ml
+setup.ml
