@@ -76,7 +76,7 @@ let newton ?(good_enough=newton_good) f_f' x0 =
     fx := fx_next;
     f'x := f'x_next;
   done;
-  !x
+  !x +. 0.
 
 
 let secant ?(good_enough) f a b =
@@ -114,11 +114,13 @@ let muller f a b = a
    reasonable (i.e. lies within the current interval [b,c] not being
    too close to the boundaries) it is accepted. The bissection result
    is used in the other case. Therefore, the range of uncertainty is
-   ensured to be reduced at least by the factor 1.6 *)
-let brent ?(tol=eps) f a b =
-  let a = ref a
-  and b = ref b
-  and c = ref a in
+   ensured to be reduced at least by the factor 1.6
+
+   See also www.physics.mcgill.ca/~patscott/teaching/numeric/Lec%203.pdf *)
+let brent ?(tol=eps) f a0 b0 =
+  let a = ref a0
+  and b = ref b0
+  and c = ref a0 in
   let fa = ref(f !a)
   and fb = ref(f !b) in
   let fc = ref(!fa) in
@@ -165,7 +167,7 @@ let brent ?(tol=eps) f a b =
           if -. new_step < tol_act then -. tol_act else new_step in
       a := !b;  fa := !fb; (* Save the previous approx. *)
       b := !b +. new_step;
-      fb := f !b;
+      fb := f(!b);
       (* Adjust c for it to have a sign opposite to that of b *)
       if (!fb > 0. && !fc > 0.) || (!fb < 0. && !fc < 0.) then (
         c := !a;  fc := !fa
@@ -173,3 +175,71 @@ let brent ?(tol=eps) f a b =
     done;
     assert false
   with Root r -> r
+
+
+let twice_epsilon_float = 2. *. epsilon_float
+
+let rec brent_loop half_tol f a fa b fb c fc d e =
+  (* [b]: best guess for the root, |f(b)| ≤ |f(a)|, |f(c)|.
+     [c]: opposite side of x axis to [b], so [b] and [c] bracket the root.
+     [a]: previous best guess.
+   *)
+  let tol_act = twice_epsilon_float *. abs_float(b) +. half_tol in
+  let m = 0.5 *. (c -. b) in
+  if abs_float m <= tol_act || fb = 0. then b
+  else (
+    let step, e' =
+      if abs_float e < tol_act || abs_float fa <= abs_float fb then
+        m, m
+      else
+        (* prev_step was large enough and was in true direction,
+           Interpolatiom may be tried *)
+        let s = fb /. fa in
+        let p, q =
+          if a = c then (* Linear interpolation *)
+            (2. *. m *. s, 1. -. s)
+          else
+            (* Inverse quadratic interpolation *)
+            let q = fa /. fc and r = fb /. fc in
+            (s *. (2. *. m *. q *. (q -. r) -. (b -. a) *. (r -. 1.)),
+             (q -. 1.) *. (r -. 1.) *. (s -. 1.)) in
+        let p, q = if p > 0. then p, -. q else -. p, q in
+        (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
+        if 2. *. p < 3. *. m *. q -. abs_float(tol_act *. q)
+           && p < abs_float(0.5 *. e *. q)
+        then p /. q, d
+        else m, m
+    in
+    (* Adjust the step to be not less than tolerance *)
+    let step =
+      if abs_float step > tol_act then step
+      else if m > 0. then tol_act else -. tol_act in
+    let b' = b +. step in
+    let fb' = f b' in
+    (* Adjust c for it to have a sign opposite to that of b *)
+    if (fb' > 0.) = (fc > 0.) then (* => fb' * fb <= 0 *)
+      let d = b' -. b in
+      if abs_float fb < abs_float fb' then
+        brent_loop half_tol f b' fb' b fb b' fb' d d
+      else
+        brent_loop half_tol f b fb b' fb' b fb d d
+    else (* => fb' * fc <= 0 *)
+      if abs_float fc < abs_float fb' then
+        brent_loop half_tol f b' fb' c fc b' fb' step e'
+      else
+        brent_loop half_tol f b fb b' fb' c fc step e'
+  )
+;;
+
+let brent ?(tol=eps) f a b =
+  let fa = f a and fb = f b in
+  if fa = 0. then a
+  else if fb = 0. then b
+  else if (fa < 0. && fb < 0.) || (fa > 0. && fb > 0.) then
+    invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
+  else
+    let d = b -. a in
+    if abs_float fa < abs_float fb then
+      brent_loop (0.5 *. tol) f b fb a fa b fb d d
+    else
+      brent_loop (0.5 *. tol) f a fa b fb a fa d d
