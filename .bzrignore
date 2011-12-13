@@ -1,3 +1,4 @@
+#							-*-conf-unix-*-
 _build
 *.byte
 *.odocl
@@ -10,3 +11,6 @@ _tags
 META
 myocamlbuild.ml
 setup.ml
+*.byte
+*.native
+src/vzeroin*
