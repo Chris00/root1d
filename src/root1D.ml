@@ -232,6 +232,7 @@ let rec brent_loop half_tol f a fa b fb c fc d e =
 ;;
 
 let brent ?(tol=eps) f a b =
+  if tol < 0. then invalid_arg "Root1D.brent: tol < 0.";
   let fa = f a and fb = f b in
   if fa = 0. then a
   else if fb = 0. then b

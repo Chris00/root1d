@@ -28,7 +28,7 @@ val brent : ?tol:float -> (float -> float) -> float -> float -> float
     @param tol desired length of the interval of uncertainty of the final
     result (must be [>= 0]).  Default: [sqrt epsilon_float].
 
-    Ref. Brent, R. (1973) Algorithms for Minimization without
+    Ref.: Brent, R. (1973) Algorithms for Minimization without
     Derivatives. Englewood Cliffs, NJ: Prentice-Hall.  *)
 
 val bisection : ?good_enough:(float -> float -> float -> float -> bool) ->
