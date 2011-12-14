@@ -190,7 +190,7 @@ let rec brent_loop half_tol f a fa b fb c fc d e =
   else (
     let step, e' =
       if abs_float e < tol_act || abs_float fa <= abs_float fb then
-        m, m
+        m, m (* bisection *)
       else
         (* prev_step was large enough and was in true direction,
            Interpolatiom may be tried *)
@@ -208,13 +208,11 @@ let rec brent_loop half_tol f a fa b fb c fc d e =
         if 2. *. p < 3. *. m *. q -. abs_float(tol_act *. q)
            && p < abs_float(0.5 *. e *. q)
         then p /. q, d
-        else m, m
+        else m, m (* bisection *)
     in
     (* Adjust the step to be not less than tolerance *)
-    let step =
-      if abs_float step > tol_act then step
-      else if m > 0. then tol_act else -. tol_act in
-    let b' = b +. step in
+    let b' = b +. (if abs_float step > tol_act then step
+                   else if m > 0. then tol_act else -. tol_act) in
     let fb' = f b' in
     (* Adjust c for it to have a sign opposite to that of b *)
     if (fb' > 0.) = (fc > 0.) then (* => fb' * fb <= 0 *)
@@ -244,6 +242,70 @@ let brent ?(tol=eps) f a b =
       brent_loop (0.5 *. tol) f b fb a fa b fb d d
     else
       brent_loop (0.5 *. tol) f a fa b fb a fa d d
+
+
+let rec brent2_loop half_tol f  a fa ea  b fb eb  c fc ec  d e =
+  let tol_act = twice_epsilon_float *. abs_float(b) +. half_tol in
+  let m = 0.5 *. (c -. b) in
+  if abs_float m <= tol_act || fb = 0. then b
+  else (
+    let step, e' =
+      if abs_float e < tol_act
+         || (ea <= eb && ldexp (abs_float fa) (ea - eb) <= abs_float fb)
+         || (ea > eb && ldexp (abs_float fb) (eb - ea) >= abs_float fa) then
+        m, m
+      else
+        let s = ldexp fb (eb - ea) /. fa in
+        let p, q =
+          if a = c then (* Linear interpolation *)
+            (2. *. m *. s, 1. -. s)
+          else
+            (* Inverse quadratic interpolation *)
+            let q = ldexp fa (ea - ec) /. fc
+            and r = ldexp fb (eb - ec) /. fc in
+            (s *. (2. *. m *. q *. (q -. r) -. (b -. a) *. (r -. 1.)),
+             (q -. 1.) *. (r -. 1.) *. (s -. 1.)) in
+        let p, q = if p > 0. then p, -. q else -. p, q in
+        (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
+        if 2. *. p < 3. *. m *. q -. abs_float(tol_act *. q)
+           && p < abs_float(0.5 *. e *. q)
+        then p /. q, d
+        else m, m
+    in
+    (* Adjust the step to be not less than tolerance *)
+    let b' = b +. (if abs_float step > tol_act then step
+                   else if m > 0. then tol_act else -. tol_act) in
+    let fb', eb' = f b' in
+    (* Adjust c for it to have a sign opposite to that of b *)
+    if (fb' > 0.) = (fc > 0.) then (* => fb' * fb <= 0 *)
+      let d = b' -. b in
+      if (eb <= eb' && ldexp (abs_float fb) (eb - eb') < abs_float fb')
+         || (eb > eb' && ldexp (abs_float fb') (eb' - eb) >= abs_float fb) then
+        brent2_loop half_tol f b' fb' eb' b fb eb b' fb' eb' d d
+      else
+        brent2_loop half_tol f b fb eb b' fb' eb' b fb eb d d
+    else (* => fb' * fc <= 0 *)
+      if (ec <= eb' && ldexp (abs_float fc) (ec - eb') < abs_float fb')
+         || (ec > eb' && ldexp (abs_float fb') (eb' - ec) >= abs_float fc) then
+        brent2_loop half_tol f b' fb' eb' c fc ec b' fb' eb' step e'
+      else
+        brent2_loop half_tol f b fb eb b' fb' eb' c fc ec step e'
+  )
+
+let brent2 ?(tol=eps) f a b =
+  if tol < 0. then invalid_arg "Root1D.brent2: tol < 0.";
+  let fa, ea = f a and fb, eb = f b in
+  if fa = 0. then a
+  else if fb = 0. then b
+  else if (fa < 0. && fb < 0.) || (fa > 0. && fb > 0.) then
+    invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
+  else
+    let d = b -. a in
+    if (ea <= eb && ldexp (abs_float fa) (ea - eb) < abs_float fb)
+       || (ea > eb && ldexp (abs_float fb) (eb - ea) >= abs_float fa) then
+      brent2_loop (0.5 *. tol) f  b fb eb  a fa ea  b fb eb  d d
+    else
+      brent2_loop (0.5 *. tol) f  a fa ea  b fb eb  a fa ea  d d
 
 
 (* Local Variables: *)

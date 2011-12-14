@@ -57,6 +57,15 @@ val newton : ?good_enough:(float -> float -> float -> bool) ->
     whether [x] is a good enough approximation. Default:
     [abs_float(f x) < sqrt epsilon_float].*)
 
+val brent2 : ?tol:float -> (float -> float * int) -> float -> float -> float
+(** [brent2 f a b] finds a zero of the function [f] in the same way
+    [brent f a b] does except that [f x] returns the couple [(y, z)]
+    for the number [y * 2**z].  Thus underflow and overflow can be
+    avoided for a function with large range.
+
+    Ref.: Brent, R. (1973) Algorithms for Minimization without
+    Derivatives. Englewood Cliffs, NJ: Prentice-Hall. *)
+
 (*
 val secant : ?good_enough:(float -> float -> bool) ->
              (float -> float) -> float -> float -> float
