@@ -1,4 +1,4 @@
-open Printf
+open Format
 open Benchmark
 
 (* Internal function for brent's method *)
@@ -70,18 +70,32 @@ let f1 x = (x +. 3.) *. (x -. 1.) *. (x -. 1.)
 let f2 x = tan x -. 2. *.  x
 (* root: 1.16556118520721 *)
 
+let f3 x = x**19.
+
+let f4 x = if x = 0. then 0. else x *. exp(-1. /. x)
+let f4' x = if x = 0. then 0. else x *. exp(-1. /. sqrt x)
+(* brent4 fails on f4' *)
+
+(* brent4 fails for delta = 1e-3 *)
+let delta = 2e-3 and a = 0. and b = 1.
+let f5_a = -. (b -. a -. delta) /. delta *. 2.**(b /. delta)
+let f5 x =
+  if a +. delta <= x && x <= b then 2.**(x /. delta)
+  else if x = a then f5_a
+  else f5_a +. (2.**(a /. delta) -. f5_a) *. (x -. a) /. delta (* arbitrary *)
+
 let print get_root =
   let get_root f a b =
     let n = ref 0 in
     let x = get_root (fun x -> incr n; f x) a b in
     x, !n in
-  let x1, n1 = get_root f 0. 1. in
-  let x2, n2 = get_root f 1. 2. in
-  let x3, n3 = get_root f 2. 3. in
-  let x4, n4 = get_root f1 (-4.) (4./.3.) in
-  let x5, n5 = get_root f2 0.5 1.5 in
-  printf "%f [%i]  %f [%i]  %f [%i]  %f [%i]  %f [%i]\n"
-         x1 n1 x2 n2 x3 n3 x4 n4 x5 n5
+  List.iter (fun (f_name, f,a,b) ->
+             let x, n = get_root f a b in
+             printf "%s: %f [%i] @ " f_name x n)
+            ["f", f, 0., 1.; "f", f, 1., 2.; "f", f, 2., 3.;
+             "f1", f1, (-4.), (4./.3.);  "f2", f2, 0.5, 1.5;
+             "f3", f3, -1., 4.;  "f4", f4, -1., 4.;  "f5", f5, 0., 1.];
+  printf "\n%!"
 
 let () =
   print Root1D.brent;
@@ -93,6 +107,9 @@ let bench get_root () =
   let _ = get_root f 2. 3. in
   let _ = get_root f1 (-4.) (4./.3.) in
   let _ = get_root f2 0.5 1.5 in
+  (* let _ = get_root f3 (-1.) 4. in *)
+  let _ = get_root f4 (-1.) 4. in
+  let _ = get_root f5 0. 1. in
   ()
 
 let t = throughputN 1 ~repeat:5
