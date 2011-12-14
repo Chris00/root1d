@@ -71,9 +71,17 @@ let f2 x = tan x -. 2. *.  x
 (* root: 1.16556118520721 *)
 
 let print get_root =
-  printf "%f %f %f %f %f\n" (get_root f 0. 1.) (get_root f 1. 2.)
-         (get_root f 2. 3.) (get_root f1 (-4.) (4./.3.))
-         (get_root f2 0.5 1.5)
+  let get_root f a b =
+    let n = ref 0 in
+    let x = get_root (fun x -> incr n; f x) a b in
+    x, !n in
+  let x1, n1 = get_root f 0. 1. in
+  let x2, n2 = get_root f 1. 2. in
+  let x3, n3 = get_root f 2. 3. in
+  let x4, n4 = get_root f1 (-4.) (4./.3.) in
+  let x5, n5 = get_root f2 0.5 1.5 in
+  printf "%f [%i]  %f [%i]  %f [%i]  %f [%i]  %f [%i]\n"
+         x1 n1 x2 n2 x3 n3 x4 n4 x5 n5
 
 let () =
   print Root1D.brent;
