@@ -243,3 +243,74 @@ let brent ?(tol=eps) f a b =
       brent_loop (0.5 *. tol) f b fb a fa b fb d d
     else
       brent_loop (0.5 *. tol) f a fa b fb a fa d d
+
+
+
+let brent ?(tol=eps) f a b =
+  let fa = f a and fb = f b in
+  if fa = 0. then a
+  else if fb = 0. then b
+  else if (fa < 0. && fb < 0.) || (fa > 0. && fb > 0.) then
+    invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
+  else (
+    let half_tol = 0.5 *. tol in
+    (* [b]: best guess for the root, |f(b)| ≤ |f(a)|, |f(c)|.
+       [c]: opposite side of x axis to [b], so [b] and [c] bracket the root.
+       [a]: previous best guess.
+     *)
+    let a = ref a and fa = ref(f a) in
+    let b = ref b and fb = ref(f b) in
+    let c = ref !a and fc = ref !fa in
+    let d = ref(!b -. !a) in
+    let e = ref !d in
+    if abs_float !fa < abs_float !fb then (
+      a := !b;    b := !c;    c := !a;
+      fa := !fb;  fb := !fc;  fc := !fa;
+    );
+    let continue = ref true in
+    let p = ref nan and q = ref nan in
+    while !continue do
+      let tol_act = twice_epsilon_float *. abs_float(!b) +. half_tol in
+      let m = 0.5 *. (!c -. !b) in
+      if abs_float m <= tol_act || !fb = 0. then continue := false
+      else (
+        if abs_float !e < tol_act || abs_float !fa <= abs_float !fb then (
+          (* Bisection is forced *)
+          d := m;  e := m
+        )
+        else (
+          let s = !fb /. !fa in
+          if !a = !c then ( (* Linear interpolation *)
+            p := 2. *. m *. s;  q := 1. -. s;
+          )
+          else ( (* Inverse quadratic interpolation *)
+            q := !fa /. !fc;
+            let r = !fb /. !fc in
+            p := s *. (2. *. m *. !q *. (!q -. r) -. (!b -. !a) *. (r -. 1.));
+            q := (!q -. 1.) *. (r -. 1.) *. (s -. 1.)
+          );
+          if !p > 0. then q := -. !q else p := -. !p;
+          (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
+          if 2. *. !p < 3. *. m *. !q -. abs_float(tol_act *. !q)
+             && !p < abs_float(0.5 *. !e *. !q)
+          then (e := !d;  d := !p /. !q)
+          else (e := m;  d := m)
+        );
+        (* Adjust the step to be not less than tolerance *)
+        a := !b;  fa := !fb;
+        b := !b +. (if abs_float !d > tol_act then !d
+                    else if m > 0. then tol_act else -. tol_act);
+        fb := f(1. *. !b);
+        (* Adjust c for it to have a sign opposite to that of b *)
+        if (!fb > 0.) = (!fc > 0.) then ( (* => fb * fa <= 0 *)
+          c := !a;  fc := !fa;
+          d := !b -. !a;  e := !d;
+        );
+        if abs_float !fc < abs_float !fb then (
+          a := !b;    b := !c;    c := !a;
+          fa := !fb;  fb := !fc;  fc := !fa;
+        )
+      )
+    done;
+    1. *. !b
+  )
