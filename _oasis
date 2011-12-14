@@ -20,6 +20,22 @@ Library "root1d"
   Modules:      Root1D
 
 
+Executable "simple"
+  Path:         tests
+  BuildTools:   ocamlbuild
+  MainIs:       simple.ml
+  BuildDepends: root1d
+  Install:      false
+  CompiledObject: best
+
+Executable "difficult"
+  Path:         tests
+  BuildTools:   ocamlbuild
+  MainIs:       difficult.ml
+  BuildDepends: root1d
+  Install:      false
+  CompiledObject: best
+
 Executable "speed"
   Build$:       flag(has_benchmark)
   Path:         tests

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8f827f7907bc66e8fffc652d39f2f09f)
+# DO NOT EDIT (digest: b32fb8508290d5a61a6dab68c4480836)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -16,6 +16,10 @@
 # Library root1d
 "src": include
 "src/root1d.cmxs": use_root1d
+# Executable simple
+<tests/simple.{native,byte}>: use_root1d
+# Executable difficult
+<tests/difficult.{native,byte}>: use_root1d
 # Executable speed
 <tests/speed.{native,byte}>: use_root1d
 <tests/speed.{native,byte}>: pkg_benchmark

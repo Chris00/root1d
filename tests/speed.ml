@@ -73,8 +73,7 @@ let f2 x = tan x -. 2. *.  x
 let f3 x = x**19.
 
 let f4 x = if x = 0. then 0. else x *. exp(-1. /. x)
-let f4' x = if x = 0. then 0. else x *. exp(-1. /. sqrt x)
-(* brent4 fails on f4' *)
+let f4' x = if x = 0. then 0. else x *. exp(-1. /. sqrt(abs_float x))
 
 (* brent4 fails for delta = 1e-3 *)
 let delta = 2e-3 and a = 0. and b = 1.
