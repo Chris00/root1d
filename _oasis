@@ -10,6 +10,10 @@ License:     LGPL-3.0 with OCaml linking exception
 Homepage:    http://forge.ocamlcore.org/projects/root1d/
 Plugins:     META (0.2), StdFiles (0.2)
 
+Flag has_benchmark
+  Description: Whether the Benchmark findlib package is installed.
+  Default:     false
+
 Library "root1d"
   Path: src
   BuildTools:   ocamlbuild
@@ -17,6 +21,7 @@ Library "root1d"
 
 
 Executable "speed"
+  Build$:       flag(has_benchmark)
   Path:         tests
   BuildTools:   ocamlbuild
   MainIs:       speed.ml

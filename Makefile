@@ -1,4 +1,4 @@
-WEB = shell.forge.ocamlcore.org:/home/groups/optimization1d/htdocs
+WEB = shell.forge.ocamlcore.org:/home/groups/root1d/htdocs
 
 PKGNAME = $(shell oasis query name)
 PKGVERSION = $(shell oasis query version)
@@ -16,7 +16,7 @@ all byte native: configure
 
 configure: setup.data
 setup.data: setup.ml
-	ocaml $< -configure
+	ocaml $< -configure --enable-has-benchmark
 
 setup.ml: _oasis
 	oasis.dev setup
@@ -39,7 +39,7 @@ dist tar: $(DISTFILES)
 clean:
 	ocaml setup.ml -clean
 	$(RM) $(PKG_TARBALL)
-	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg) setup.data
+	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg) setup.data setup.log
 
 distclean dist-clean::
 	ocaml setup.ml -distclean
