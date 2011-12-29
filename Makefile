@@ -1,3 +1,4 @@
+# This Makefile is intended for developers.  Users simply use OASIS.
 WEB = shell.forge.ocamlcore.org:/home/groups/root1d/htdocs
 
 PKGNAME = $(shell oasis query name)
@@ -11,7 +12,7 @@ DISTFILES = AUTHORS.txt INSTALL.txt README.txt _oasis _tags myocamlbuild.ml \
 
 .PHONY: all byte native configure doc install uninstall reinstall upload-doc
 
-all byte native: configure
+all byte native setup.log: configure
 	ocaml setup.ml -build
 
 configure: setup.data
@@ -21,7 +22,7 @@ setup.data: setup.ml
 setup.ml: _oasis
 	oasis.dev setup
 
-doc install uninstall reinstall: all
+doc install uninstall reinstall: setup.log
 	ocaml setup.ml -$@
 
 upload-doc: doc
@@ -39,8 +40,8 @@ dist tar: $(DISTFILES)
 clean:
 	ocaml setup.ml -clean
 	$(RM) $(PKG_TARBALL)
-	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg) setup.data setup.log
+	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg)
 
-distclean dist-clean::
+distclean dist-clean:: clean
 	ocaml setup.ml -distclean
 	$(RM) $(wildcard *.ba[0-9] *.bak *~ *.odocl)
