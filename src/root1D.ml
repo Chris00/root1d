@@ -19,9 +19,10 @@
 open Printf
 
 let eps = sqrt epsilon_float
+let half_eps = 0.5 *. eps
 
 exception Root of float
-  (* Internal exception used when the exact root is found *)
+(* Internal exception used when the exact root is found *)
 
 
 (* Assume fa = f(a) < 0 < fb = f(b).  A recursive function is more
@@ -32,17 +33,17 @@ let do_bisection good_enough f a b fa fb =
   and fa = ref fa and fb = ref fb in
   try
     while not(good_enough !a !b !fa !fb) do
-      let m = 0.5 *. (!a +. !b) in
+      let m = !a +. 0.5 *. (!b -. !a) in
       let fm = f m in
       if fm = 0. then raise(Root m)
       else if fm < 0. then (a := m; fa := fm)
       else (* fm > 0. *) (b := m; fb := fm)
     done;
-    0.5 *. (!a +. !b)
+    !a +. 0.5 *. (!b -. !a)
   with Root r -> r
 
 let bisection_good a b _ _ =
-  abs_float(a -. b) < eps *. (abs_float a +. abs_float b)
+  abs_float(a -. b) < half_eps *. (abs_float a +. abs_float b)
 
 let bisection ?(good_enough=bisection_good) f a b =
   let fa = f a

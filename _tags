@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b32fb8508290d5a61a6dab68c4480836)
+# DO NOT EDIT (digest: 3cc9f730450de4525a16da9fe85f618d)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -14,7 +14,6 @@
 "_darcs": -traverse
 "_darcs": not_hygienic
 # Library root1d
-"src": include
 "src/root1d.cmxs": use_root1d
 # Executable simple
 <tests/simple.{native,byte}>: use_root1d

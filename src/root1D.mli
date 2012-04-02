@@ -40,7 +40,8 @@ val bisection : ?good_enough:(float -> float -> float -> float -> bool) ->
 
     @param good_enough is a function taking as arguments the current
     [a], [b], [f(a)] and [f(b)] and returning whether they define a
-    good enough approximation. *)
+    good enough approximation.  By default, this function tests is
+    |a - b| ≤ √epsilon_float ‣ (|a| + |b|)/2 *)
 
 val newton : ?good_enough:(float -> float -> float -> bool) ->
   (float -> float * float) -> float -> float
