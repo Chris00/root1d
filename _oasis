@@ -54,6 +54,6 @@ Document API
   XOCamlbuildLibraries: root1d
 
 SourceRepository trunk
-  Type:       svn
-  Location:   svn://scm.ocamlcore.org/svn/root1d/trunk
+  Type:       git
+  Location:   ssh://forge.ocamlcore.org//git/root1d/root1d.git
   Browser:    http://forge.ocamlcore.org/scm/browser.php?group_id=281
