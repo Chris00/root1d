@@ -1,5 +1,5 @@
 #								-*-conf-*-
-OASISFormat: 0.2
+OASISFormat: 0.3
 Name:        root1d
 Version:     0.2
 Synopsis:    Find roots of 1D functions.
@@ -8,7 +8,7 @@ Authors:     Christophe Troestler <Christophe.Troestler@umons.ac.be>,
              Edgar Friendly <thelema314@gmail.com>
 License:     LGPL-3.0 with OCaml linking exception
 Homepage:    http://forge.ocamlcore.org/projects/root1d/
-Plugins:     META (0.2), StdFiles (0.2)
+Plugins:     META (0.3), StdFiles (0.3)
 
 Flag has_benchmark
   Description: Whether the Benchmark findlib package is installed.
@@ -47,7 +47,7 @@ Executable "speed"
 
 Document API
   Title:           API reference for Root1d
-  Type:            OCamlbuild (0.2)
+  Type:            OCamlbuild (0.3)
   InstallDir:      $docdir/api
   BuildTools:      ocamldoc, ocamlbuild
   XOCamlbuildPath: src
