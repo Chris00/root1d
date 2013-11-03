@@ -4,8 +4,10 @@ Name:        root1d
 Version:     0.3
 Synopsis:    Find roots of 1D functions.
 Description: Collection of functions to seek roots of functions float -> float.
+  Pure OCaml code.
 Authors:     Christophe Troestler <Christophe.Troestler@umons.ac.be>,
              Edgar Friendly <thelema314@gmail.com>
+Maintainers: Christophe Troestler <Christophe.Troestler@umons.ac.be>
 License:     LGPL-3.0 with OCaml linking exception
 Homepage:    http://forge.ocamlcore.org/projects/root1d/
 Plugins:     META (0.3), StdFiles (0.3)
