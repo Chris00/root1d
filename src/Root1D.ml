@@ -77,7 +77,7 @@ let newton ?(good_enough=newton_good) f_f' x0 =
     fx := fx_next;
     f'x := f'x_next;
   done;
-  !x +. 0.
+  !x *. 1.
 
 
 let secant ?(good_enough) f a b =
