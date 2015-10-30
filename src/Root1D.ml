@@ -136,15 +136,14 @@ let brent ?(tol=eps) f a0 b0 =
         fa := !fb; fb := !fc; fc := !fa;
       );
       let tol_act = 2. *. epsilon_float *. abs_float(!b) +. 0.5 *. tol in
-      let bisec_step = 0.5 *. (!c -. !b) in
-      if abs_float bisec_step <= tol_act || !fb = 0. then
+      let c_b = !c -. !b in
+      if 0.5 *. abs_float c_b <= tol_act || !fb = 0. then
         raise(Root !b);
       let new_step =
         if abs_float prev_step >= tol_act
            && abs_float !fa > abs_float !fb then
           (* prev_step was large enough and was in true direction,
              Interpolatiom may be tried *)
-          let c_b = !c -. !b in
           let p, q =
             if !a = !c then
               (* linear interpolation *)
@@ -158,14 +157,14 @@ let brent ?(tol=eps) f a0 b0 =
           (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
           if p < 0.75 *. c_b *. q -. 0.5 *. abs_float(tol_act *. q)
              && p < abs_float(0.5 *. prev_step *. q) then p /. q
-          else bisec_step
-        else bisec_step in
+          else 0.5 *. c_b
+        else 0.5 *. c_b in
       a := !b;  fa := !fb; (* Save the previous approx. *)
       if abs_float new_step > tol_act then
         b := !b +. new_step
       else
         (* Adjust the step to be not less than tolerance *)
-        b := !b +. copysign tol_act bisec_step;
+        b := !b +. copysign tol_act c_b;
       fb := f(!b);
       (* Adjust c for it to have a sign opposite to that of b *)
       if (!fb > 0. && !fc > 0.) || (!fb < 0. && !fc < 0.) then (
