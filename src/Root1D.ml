@@ -102,7 +102,7 @@ let muller f a b = a
    the linear or quadric inverse interpolation.
    At every step program operates on three abscissae - a, b, and c.
    b - the last and the best approximation to the root
-   a - the last but one approximation
+   a - the last but one best approximation
    c - the last but one or even earlier approximation than a that
        1) |f(b)| <= |f(c)|
        2) f(b) and f(c) have opposite signs, i.e. b and c confine
@@ -160,14 +160,12 @@ let brent ?(tol=eps) f a0 b0 =
              && p < abs_float(0.5 *. prev_step *. q) then p /. q
           else bisec_step
         else bisec_step in
-      (* Adjust the step to be not less than tolerance *)
-      let new_step =
-        if new_step > 0. then
-          if new_step < tol_act then tol_act else new_step
-        else
-          if -. new_step < tol_act then -. tol_act else new_step in
       a := !b;  fa := !fb; (* Save the previous approx. *)
-      b := !b +. new_step;
+      if abs_float new_step > tol_act then
+        b := !b +. new_step
+      else
+        (* Adjust the step to be not less than tolerance *)
+        b := !b +. copysign tol_act bisec_step;
       fb := f(!b);
       (* Adjust c for it to have a sign opposite to that of b *)
       if (!fb > 0. && !fc > 0.) || (!fb < 0. && !fc < 0.) then (

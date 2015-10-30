@@ -11,6 +11,7 @@ Maintainers: Christophe Troestler <Christophe.Troestler@umons.ac.be>
 License:     LGPL-3.0 with OCaml linking exception
 Homepage:    http://forge.ocamlcore.org/projects/root1d/
 Plugins:     META (0.3), StdFiles (0.3)
+OCamlVersion: >= 4.0.0
 
 Flag has_benchmark
   Description: Whether the Benchmark findlib package is installed.
