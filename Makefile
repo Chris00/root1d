@@ -17,7 +17,7 @@ all byte native setup.log: configure
 
 configure: setup.data
 setup.data: setup.ml
-	ocaml $< -configure --enable-has-benchmark
+	ocaml $< -configure --enable-tests --enable-has-benchmark
 
 setup.ml: _oasis
 	oasis setup -setup-update dynamic

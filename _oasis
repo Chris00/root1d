@@ -25,6 +25,7 @@ Library "root1d"
 
 Executable "simple"
   Path:         tests
+  Build$:       flag(tests)
   BuildTools:   ocamlbuild
   MainIs:       simple.ml
   BuildDepends: root1d
@@ -33,6 +34,7 @@ Executable "simple"
 
 Executable "difficult"
   Path:         tests
+  Build$:       flag(tests)
   BuildTools:   ocamlbuild
   MainIs:       difficult.ml
   BuildDepends: root1d
@@ -40,7 +42,7 @@ Executable "difficult"
   CompiledObject: best
 
 Executable "speed"
-  Build$:       flag(has_benchmark)
+  Build$:       flag(has_benchmark) && flag(tests)
   Path:         tests
   BuildTools:   ocamlbuild
   MainIs:       speed.ml
