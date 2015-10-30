@@ -20,7 +20,7 @@
 
 val brent : ?tol:float -> (float -> float) -> float -> float -> float
 (** [brent f a b] returns an approximation [x] of a root of [f] in
-    the interval [[a,b]] with accuracy [6. *. epsilon_float
+    the interval [[a,b]] with absolute accuracy [6. *. epsilon_float
     *. abs_float(x) +. tol].
 
     @raise Invalid_argument if [f(a) *. f(b) > 0.].
@@ -31,17 +31,15 @@ val brent : ?tol:float -> (float -> float) -> float -> float -> float
     Ref.: Brent, R. (1973) Algorithms for Minimization without
     Derivatives. Englewood Cliffs, NJ: Prentice-Hall.  *)
 
-val bisection : ?good_enough:(float -> float -> float -> float -> bool) ->
-                (float -> float) -> float -> float -> float
+val bisection : ?eps: float -> (float -> float) -> float -> float -> float
 (** [bisection f a b] find an approximation of a root in the
     interval [[a,b]] using the bisection algorithm.
 
-    @raise Invalid_argument if [f(a) *. f(b) > 0.].
+    @raise Invalid_argument if [f(a) *. f(b) > 0.] or [eps <= 0.].
 
-    @param good_enough is a function taking as arguments the current
-    [a], [b], [f(a)] and [f(b)] and returning whether they define a
-    good enough approximation.  By default, this function tests is
-    |a - b| ≤ √epsilon_float ‣ (|a| + |b|)/2 *)
+    @param eps is the desired relative error on the solution.  More
+    precisely, it terminates when the interval \[a,b\] verifies
+    |a-b| ≤ eps max(|a|, |b|).  Default: [sqrt epsilon_float]. *)
 
 val newton : ?good_enough:(float -> float -> float -> bool) ->
   (float -> float * float) -> float -> float

@@ -19,20 +19,22 @@
 open Printf
 
 let eps = sqrt epsilon_float
-let half_eps = 0.5 *. eps
 
 exception Root of float
 (* Internal exception used when the exact root is found *)
 
+let max_float (a: float) (b: float) =
+  if a >= b then a (* ≠ NaN *)
+  else b
 
 (* Assume fa = f(a) < 0 < fb = f(b).  A recursive function is more
    elegant but we do it imperatively to allow the compiler to unbox
    the floats. *)
-let do_bisection good_enough f a b fa fb =
+let do_bisection improve f a b fa fb =
   let a = ref a and b = ref b
   and fa = ref fa and fb = ref fb in
   try
-    while not(good_enough !a !b !fa !fb) do
+    while improve !a !b !fa !fb do
       let m = !a +. 0.5 *. (!b -. !a) in
       let fm = f m in
       if fm = 0. then raise(Root m)
@@ -42,10 +44,18 @@ let do_bisection good_enough f a b fa fb =
     !a +. 0.5 *. (!b -. !a)
   with Root r -> r
 
-let bisection_good a b _ _ =
-  abs_float(a -. b) < half_eps *. (abs_float a +. abs_float b)
+let bisection_improve_default a b _ _ =
+  abs_float(a -. b) > eps *. max_float (abs_float a) (abs_float b)
 
-let bisection ?(good_enough=bisection_good) f a b =
+let bisection_improve_eps eps a b _ _ =
+  abs_float(a -. b) > eps *. max_float (abs_float a) (abs_float b)
+
+let bisection ?eps f a b =
+  let improve = match eps with
+    | None -> bisection_improve_default
+    | Some eps ->
+       if eps <= 0. then invalid_arg "Root1D.bisection: tol <= 0";
+       bisection_improve_eps eps in
   let fa = f a
   and fb = f b in
   if fa = 0. then a
@@ -54,13 +64,13 @@ let bisection ?(good_enough=bisection_good) f a b =
     else if fb < 0. then
       invalid_arg "Root1D.bisection: f(a) and f(b) are both < 0."
     else (* fb > 0. *)
-      do_bisection good_enough f a b fa fb
+      do_bisection improve f a b fa fb
   else (* fa > 0. *)
     if fb = 0. then b
     else if fb > 0. then
       invalid_arg "Root1D.bisection: f(a) and f(b) are both > 0."
     else (* fb < 0. *)
-      do_bisection good_enough f b a fb fa
+      do_bisection improve f b a fb fa
 
 let newton_good x xpre fx = abs_float fx < eps
 
