@@ -135,55 +135,59 @@ let brent ?(tol=eps) f a0 b0 =
   let fa = ref(f !a)
   and fb = ref(f !b) in
   let fc = ref(!fa) in
-  if !fa *. !fb > 0. then
-    invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs";
-  try
-    while true do
-      let prev_step = !b -. !a in
-      (* Swap b and c for b to be the best approximation *)
-      if abs_float !fc < abs_float !fb then (
-        a := !b;   b := !c;   c := !a;
-        fa := !fb; fb := !fc; fc := !fa;
-      );
-      let tol_act = 2. *. epsilon_float *. abs_float(!b) +. 0.5 *. tol in
-      let c_b = !c -. !b in
-      if 0.5 *. abs_float c_b <= tol_act || !fb = 0. then
-        raise(Root !b);
-      let new_step =
-        if abs_float prev_step >= tol_act
-           && abs_float !fa > abs_float !fb then
-          (* prev_step was large enough and was in true direction,
+  if !fa = 0. then !a
+  else if !fb = 0. then !b
+  else if !fa *. !fb > 0. then
+    invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
+  else (
+    try
+      while true do
+        let prev_step = !b -. !a in
+        (* Swap b and c for b to be the best approximation *)
+        if abs_float !fc < abs_float !fb then (
+          a := !b;   b := !c;   c := !a;
+          fa := !fb; fb := !fc; fc := !fa;
+        );
+        let tol_act = 2. *. epsilon_float *. abs_float(!b) +. 0.5 *. tol in
+        let c_b = !c -. !b in
+        if 0.5 *. abs_float c_b <= tol_act || !fb = 0. then
+          raise(Root !b);
+        let new_step =
+          if abs_float prev_step >= tol_act
+             && abs_float !fa > abs_float !fb then
+            (* prev_step was large enough and was in true direction,
              Interpolatiom may be tried *)
-          let p, q =
-            if !a = !c then
-              (* linear interpolation *)
-              let s = !fb /. !fa in (c_b *. s, 1. -. s)
-            else
-              (* Quadric inverse interpolation *)
-              let t = !fa /. !fc and r = !fb /. !fc and s = !fb /. !fa in
-              (s *. (c_b *. t *. (t -. r) -. (!b -. !a) *. (r -. 1.)),
-               (t -. 1.) *. (r -. 1.) *. (s -. 1.)) in
-          let p, q = if p > 0. then p, -. q else -. p, q in
-          (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
-          if p < 0.75 *. c_b *. q -. 0.5 *. abs_float(tol_act *. q)
-             && p < abs_float(0.5 *. prev_step *. q) then p /. q
-          else 0.5 *. c_b
-        else 0.5 *. c_b in
-      a := !b;  fa := !fb; (* Save the previous approx. *)
-      if abs_float new_step > tol_act then
-        b := !b +. new_step
-      else
-        (* Adjust the step to be not less than tolerance *)
-        b := !b +. copysign tol_act c_b;
-      fb := f(!b);
-      (* Adjust c for it to have a sign opposite to that of b *)
-      if !fb *. !fc > 0. then (
-        c := !a;  fc := !fa;
-      )
-    done;
-    assert false
-  with Root r -> r
-
+            let p, q =
+              if !a = !c then
+                (* linear interpolation *)
+                let s = !fb /. !fa in (c_b *. s, 1. -. s)
+              else
+                (* Quadric inverse interpolation *)
+                let t = !fa /. !fc and r = !fb /. !fc and s = !fb /. !fa in
+                (s *. (c_b *. t *. (t -. r) -. (!b -. !a) *. (r -. 1.)),
+                 (t -. 1.) *. (r -. 1.) *. (s -. 1.)) in
+            let p, q = if p > 0. then p, -. q else -. p, q in
+            (* If b+p/q falls in [b,c] and isn't too large, it is accepted *)
+            if p < 0.75 *. c_b *. q -. 0.5 *. abs_float(tol_act *. q)
+               && p < abs_float(0.5 *. prev_step *. q) then p /. q
+            else 0.5 *. c_b
+          else 0.5 *. c_b in
+        a := !b;  fa := !fb; (* Save the previous approx. *)
+        if abs_float new_step > tol_act then
+          b := !b +. new_step
+        else
+          (* Adjust the step to be not less than tolerance *)
+          b := !b +. copysign tol_act c_b;
+        fb := f(!b);
+        (* Adjust c for it to have a sign opposite to that of b *)
+        if !fb *. !fc > 0. then (
+          c := !a;  fc := !fa;
+          assert(!fb *. !fc <= 0.);
+        )
+      done;
+      assert false
+    with Root r -> r
+  )
 
 let twice_epsilon_float = 2. *. epsilon_float
 
