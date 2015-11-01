@@ -135,7 +135,7 @@ let brent ?(tol=eps) f a0 b0 =
   let fa = ref(f !a)
   and fb = ref(f !b) in
   let fc = ref(!fa) in
-  if (!fa < 0. && !fb < 0.) || (!fa > 0. && !fb > 0.) then
+  if !fa *. !fb > 0. then
     invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs";
   try
     while true do
@@ -177,8 +177,8 @@ let brent ?(tol=eps) f a0 b0 =
         b := !b +. copysign tol_act c_b;
       fb := f(!b);
       (* Adjust c for it to have a sign opposite to that of b *)
-      if (!fb > 0. && !fc > 0.) || (!fb < 0. && !fc < 0.) then (
-        c := !a;  fc := !fa
+      if !fb *. !fc > 0. then (
+        c := !a;  fc := !fa;
       )
     done;
     assert false
@@ -237,7 +237,7 @@ let rec brent_loop half_tol f a fa b fb c fc d e =
   )
 ;;
 
-let brent ?(tol=eps) f a b =
+let brent1 ?(tol=eps) f a b =
   if tol < 0. then invalid_arg "Root1D.brent: tol < 0.";
   let fa = f a and fb = f b in
   if fa = 0. then a
