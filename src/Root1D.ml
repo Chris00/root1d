@@ -140,18 +140,19 @@ let brent ?(tol=eps) f a0 b0 =
   else if !fa *. !fb > 0. then
     invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
   else (
-    try
-      while true do
-        let prev_step = !b -. !a in
-        (* Swap b and c for b to be the best approximation *)
-        if abs_float !fc < abs_float !fb then (
-          a := !b;   b := !c;   c := !a;
-          fa := !fb; fb := !fc; fc := !fa;
-        );
-        let tol_act = 2. *. epsilon_float *. abs_float(!b) +. 0.5 *. tol in
-        let c_b = !c -. !b in
-        if 0.5 *. abs_float c_b <= tol_act || !fb = 0. then
-          raise(Root !b);
+    let continue = ref true in
+    while !continue do
+      let prev_step = !b -. !a in
+      (* Swap b and c for b to be the best approximation *)
+      if abs_float !fc < abs_float !fb then (
+        a := !b;   b := !c;   c := !a;
+        fa := !fb; fb := !fc; fc := !fa;
+      );
+      let tol_act = 2. *. epsilon_float *. abs_float(!b) +. 0.5 *. tol in
+      let c_b = !c -. !b in
+      if 0.5 *. abs_float c_b <= tol_act || !fb = 0. then
+        continue := false (* the root is in [b] *)
+      else (
         let new_step =
           if abs_float prev_step >= tol_act
              && abs_float !fa > abs_float !fb then
@@ -184,9 +185,9 @@ let brent ?(tol=eps) f a0 b0 =
           c := !a;  fc := !fa;
           assert(!fb *. !fc <= 0.);
         )
-      done;
-      assert false
-    with Root r -> r
+      )
+    done;
+    !b
   )
 
 let twice_epsilon_float = 2. *. epsilon_float
