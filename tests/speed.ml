@@ -93,16 +93,18 @@ let print get_root =
              printf "%s: %f [%i] @ " f_name x n)
             ["f", f, 0., 1.; "f", f, 1., 2.; "f", f, 2., 3.;
              "f1", f1, (-4.), (4./.3.);  "f2", f2, 0.5, 1.5;
-             "f3", f3, -1., 4.;  "f4", f4, -1., 4.;  "f5", f5, 0., 1.]
+             "f3", f3, -1., 4.;  "f4", f4, -1., 4.;  "f5", f5, 0., 1.];
+  printf "@\n%!"
 
 let () =
   printf "Bisection:@\n";
   print Root1D.bisection;
   printf "Brent:@\n";
   print Root1D.brent;
+  printf "Illinois:@\n";
+  print Root1D.illinois;
   printf "Brent 4:@\n";
-  print brent4;
-  printf "@\n%!"
+  print brent4
 
 let bench get_root () =
   let _ = get_root f 0. 1. in
@@ -117,6 +119,7 @@ let bench get_root () =
 
 let t = throughputN 1 ~repeat:5
                     ["Root1D", bench Root1D.brent, ();
+                     "Illinois", bench Root1D.illinois, ();
                      "brent4", bench brent4, ()]
 
 let () =

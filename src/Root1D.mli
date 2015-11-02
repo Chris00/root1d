@@ -35,11 +35,26 @@ val bisection : ?eps: float -> (float -> float) -> float -> float -> float
 (** [bisection f a b] find an approximation of a root in the
     interval [[a,b]] using the bisection algorithm.
 
-    @raise Invalid_argument if [f(a) *. f(b) > 0.] or [eps <= 0.].
+    @raise Invalid_argument if [f(a) *. f(b) > 0.] or [eps <= 0.]
 
     @param eps is the desired relative error on the solution.  More
     precisely, it terminates when the interval \[a,b\] verifies
     |a-b| ≤ eps max(|a|, |b|).  Default: [sqrt epsilon_float]. *)
+
+val illinois : ?eps: float -> (float -> float) -> float -> float -> float
+(** [illinois f a b] find an approximation of a root in the interval
+    [[a,b]] using the Illinois algorithm (which is the Regula Falsi
+    method with a small twist).  Order of convergence: ³√3 ≈ 1.442.
+
+    @raise Invalid_argument if [f(a) *. f(b) > 0.] or [eps <= 0.]
+
+    @param eps is the desired relative error on the solution.  More
+    precisely, it terminates when the interval \[a,b\] verifies
+    |a-b| ≤ eps max(|a|, |b|).  Default: [sqrt epsilon_float].
+
+    Ref.: {{:http://link.springer.com/article/10.1007/BF01934364}
+    M. Dowell, P. Jarrat, A modified Regula Falsi method for
+    computing the root of anequation, BIT 11 (1971), 168–174}. *)
 
 val newton : ?good_enough:(float -> float -> float -> bool) ->
   (float -> float * float) -> float -> float

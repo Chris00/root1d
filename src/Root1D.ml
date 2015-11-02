@@ -34,7 +34,7 @@ let do_bisection improve f a b fa fb =
   let a = ref a and b = ref b
   and fa = ref fa and fb = ref fb in
   try
-    while improve !a !b !fa !fb do
+    while improve !a !b do
       let m = !a +. 0.5 *. (!b -. !a) in
       let fm = f m in
       if fm = 0. then raise(Root m)
@@ -44,10 +44,10 @@ let do_bisection improve f a b fa fb =
     !a +. 0.5 *. (!b -. !a)
   with Root r -> r
 
-let bisection_improve_default a b _ _ =
+let bisection_improve_default a b =
   abs_float(a -. b) > eps *. max_float (abs_float a) (abs_float b)
 
-let bisection_improve_eps eps a b _ _ =
+let bisection_improve_eps eps a b =
   abs_float(a -. b) > eps *. max_float (abs_float a) (abs_float b)
 
 let bisection ?eps f a b =
@@ -90,11 +90,52 @@ let newton ?(good_enough=newton_good) f_f' x0 =
   !x *. 1.
 
 
-let secant ?(good_enough) f a b =
-  a
+type last_iter = A | B
 
-let false_position ?(good_enough) f a b =
-  a
+(* Assume fa = f(a) < 0 < f(b) = fb. *)
+let do_illinois improve f a b fa fb =
+  let a = ref a
+  and b = ref b in
+  let fa = ref fa in
+  let fb = ref fb in
+  try
+    (* One could also implement this using x0 and x1, the last 2
+       iterations, but this is slightly slower. *)
+    let last = ref B in
+    while improve !a !b do
+      let x = !b -. !fb *. (!b -. !a) /. (!fb -. !fa) in
+      let fx = f x in
+      if fx = 0. then raise(Root x);
+      match !last with
+      | A -> if fx > 0. then (b := x;  fb := fx;  last := B)
+             else (a := x;  fa := fx;  fb := 0.5 *. !fb)
+      | B -> if fx < 0. then (a := x;  fa := fx;  last := A)
+             else (b := x;  fb := fx;  fa := 0.5 *. !fa)
+    done;
+    match !last with A -> !a | B -> !b
+  with Root r -> r
+
+let illinois ?eps f a b =
+  let improve = match eps with
+    | None -> bisection_improve_default
+    | Some eps ->
+       if eps <= 0. then invalid_arg "Root1D.bisection: tol <= 0";
+       bisection_improve_eps eps in
+  let fa = f a in
+  if fa = 0. then a
+  else if fa < 0. then
+    let fb = f b in
+    if fb = 0. then b
+    else if fb < 0. then
+      invalid_arg "Root.illinois: f(a) and f(b) are both < 0."
+    else (* fb > 0. *) do_illinois improve f a b fa fb
+  else (* fa > 0. *)
+    let fb = f b in
+    if fb = 0. then b
+    else if fb > 0. then
+      invalid_arg "Root.illinois: f(a) and f(b) are both > 0."
+    else (* fb < 0. *) do_illinois improve f b a fb fa
+
 
 let muller f a b = a
 

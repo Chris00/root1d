@@ -16,3 +16,4 @@ setup.ml
 src/vzeroin*
 *.docdir
 *.tar.gz
+/biblio/
