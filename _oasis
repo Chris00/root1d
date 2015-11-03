@@ -51,6 +51,15 @@ Executable "speed"
   Install:      false
   CompiledObject: best
 
+Executable "precision"
+  Build$:       flag(tests)
+  Path:         tests
+  BuildTools:   ocamlbuild
+  MainIs:       precision.ml
+  BuildDepends: root1d
+  Install:      false
+  CompiledObject: best
+
 Document API
   Title:           API reference for Root1d
   Type:            OCamlbuild (0.4)
