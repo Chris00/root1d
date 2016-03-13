@@ -1,7 +1,7 @@
 #								-*-conf-*-
 OASISFormat: 0.4
 Name:        root1d
-Version:     0.3
+Version:     0.4
 Synopsis:    Find roots of 1D functions.
 Description: Collection of functions to seek roots of functions float -> float.
   Pure OCaml code.
