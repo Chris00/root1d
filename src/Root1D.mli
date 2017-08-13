@@ -20,7 +20,9 @@
    NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
    CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.  *)
 
-(** 1D Root finding algorithms. *)
+(** 1D Root finding algorithms.
+
+    @version %%VERSION%% *)
 
 val brent : ?tol:float -> (float -> float) -> float -> float -> float
 (** [brent f a b] returns an approximation [x] of a root of [f] in
