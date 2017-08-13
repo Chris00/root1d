@@ -9,12 +9,14 @@ DISTFILES = README.md CHANGES.md LICENSE.md Makefile src/META src/API.odocl \
   $(wildcard $(addprefix src/, *.ml *.mli *.mllib *.mlpack *.ab)) \
   $(wildcard tests/*.ml tests/*.ab)  $(wildcard examples/*.ml)
 
-.PHONY: all build byte native test doc install uninstall upload-doc lint
+.PHONY: all build byte native test runtest doc install uninstall upload-doc lint
 
 all build byte native:
 	jbuilder build @install #--dev
 
-test:
+test runtest:
+# Force the tests to be run
+	$(RM) -rf _build/default/tests/
 	jbuilder runtest
 
 install uninstall:
