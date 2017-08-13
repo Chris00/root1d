@@ -5,28 +5,31 @@ PKGNAME = $(shell oasis query name)
 PKGVERSION = $(shell oasis query version)
 PKG_TARBALL = $(PKGNAME)-$(PKGVERSION).tar.gz
 
-DISTFILES = AUTHORS.txt INSTALL.txt README.txt _oasis _tags myocamlbuild.ml \
-  setup.ml Makefile src/META src/API.odocl \
+DISTFILES = README.md CHANGES.md LICENSE.md Makefile src/META src/API.odocl \
   $(wildcard $(addprefix src/, *.ml *.mli *.mllib *.mlpack *.ab)) \
   $(wildcard tests/*.ml tests/*.ab)  $(wildcard examples/*.ml)
 
-.PHONY: all byte native configure doc install uninstall reinstall upload-doc
+.PHONY: all build byte native test doc install uninstall upload-doc lint
 
-all byte native setup.log: configure
-	ocaml setup.ml -build
+all build byte native:
+	jbuilder build @install #--dev
 
-configure: setup.data
-setup.data: setup.ml
-	ocaml $< -configure --enable-tests --enable-has-benchmark
+test:
+	jbuilder runtest
 
-setup.ml: _oasis
-	oasis setup -setup-update dynamic
+install uninstall:
+	jbuilder $@
 
-doc install uninstall reinstall: setup.log
-	ocaml setup.ml -$@
+doc: all
+	odoc compile --pkg root1d _build/default/src/Root1D.cmti
+	odoc html _build/default/src/Root1D.odoc -o _build/
+	odoc css -o _build/
+	echo '.def { background: #f9f9de; }' >> _build/odoc.css
 
 upload-doc: doc
 	scp -C -r _build/src/API.docdir/ $(WEB)/
+lint:
+	opam lint root1d.opam
 
 # Make a tarball
 .PHONY: dist tar
@@ -40,7 +43,7 @@ dist tar: $(DISTFILES)
 
 .PHONY: clean distclean dist-clean
 clean:
-	ocaml setup.ml -clean
+	jbuilder clean
 	$(RM) $(PKG_TARBALL)
 	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg)
 

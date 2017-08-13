@@ -7,13 +7,6 @@ _build
 *.log
 *.txt
 *.shar
-_tags
-META
-myocamlbuild.ml
-setup.ml
-*.byte
-*.native
+*.install
 src/vzeroin*
-*.docdir
-*.tar.gz
 /biblio/
