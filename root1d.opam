@@ -7,6 +7,7 @@ license: "ISC"
 homepage: "https://github.com/Chris00/root1d"
 dev-repo: "https://github.com/Chris00/root1d.git"
 bug-reports: "https://github.com/Chris00/root1d/issues"
+doc: "https://Chris00.github.io/root1d/doc"
 build: [
   [ "jbuilder" "subst" ] {pinned}
   [ "jbuilder" "build" "-p" name "-j" jobs ]

@@ -1,7 +1,6 @@
 #							-*-conf-unix-*-
 _build
 *.byte
-*.odocl
 *.mllib
 *.data
 *.log
