@@ -1,11 +1,8 @@
-Root1D
-======
+Root1D — Find roots of 1D functions
+===================================
 
-The `Root1D` module provides a collection of functions to seek roots
-of functions `float → float`.  This is pure OCaml code so is very
-portable.  See the [signature of `Root1D`](src/Root1D.mli) for
-details.  It can also be consulted
-in [HTML form](http://math.umons.ac.be/an/software/doc/Root1D/).
+The module `Root1D` provides a collection of functions to seek roots
+of functions `float → float`.
 
 
 Installation
@@ -22,3 +19,9 @@ To compile bu hand, install [jbuilder][] and do `jbuilder build`.
 
 [opam]: https://opam.ocaml.org/
 [jbuilder]: https://github.com/janestreet/jbuilder
+
+Documentation
+-------------
+
+See the [signature of `Root1D`](src/Root1D.mli).  It can also be
+consulted rendered to [HTML](http://math.umons.ac.be/an/software/doc/Root1D/).
