@@ -8,5 +8,6 @@ _build
 *.txt
 *.shar
 *.install
+.merlin
 src/vzeroin*
 /biblio/
