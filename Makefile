@@ -1,9 +1,7 @@
 # This Makefile is intended for developers.  Users simply use OASIS.
 WEB = san@math.umons.ac.be:public_html/software
 
-PKGNAME = $(shell oasis query name)
-PKGVERSION = $(shell oasis query version)
-PKG_TARBALL = $(PKGNAME)-$(PKGVERSION).tar.gz
+PKGVERSION = $(shell git describe --always --dirty)
 
 DISTFILES = README.md CHANGES.md LICENSE.md Makefile src/META src/API.odocl \
   $(wildcard $(addprefix src/, *.ml *.mli *.mllib *.mlpack *.ab)) \
@@ -22,15 +20,15 @@ test runtest:
 install uninstall:
 	jbuilder $@
 
-doc: all
-	odoc compile --pkg root1d _build/default/src/Root1D.cmti
-	odoc html _build/default/src/Root1D.odoc -o _build/
-	odoc css -o _build/
-	echo '.def { background: #f9f9de; }' >> _build/odoc.css
+doc:
+	sed -e 's/%%VERSION%%/$(PKGVERSION)/' src/Root1D.mli \
+	  > _build/default/src/Root1D.mli
+	jbuilder build @doc
+	echo '.def { background: #f9f9de; }' >> _build/default/_doc/odoc.css
 
 upload-doc: doc
-	scp -C -r _build/root1d/Root1D/ $(WEB)/doc
-	scp -C _build/odoc.css $(WEB)/
+	scp -C -r _build/default/_doc/root1d/Root1D $(WEB)/doc
+	scp -C _build/default/_doc/odoc.css $(WEB)/
 
 lint:
 	opam lint root1d.opam
