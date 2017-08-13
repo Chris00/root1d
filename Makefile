@@ -1,5 +1,5 @@
 # This Makefile is intended for developers.  Users simply use OASIS.
-WEB = shell.forge.ocamlcore.org:/home/groups/root1d/htdocs
+WEB = san@math.umons.ac.be:public_html/software
 
 PKGNAME = $(shell oasis query name)
 PKGVERSION = $(shell oasis query version)
@@ -27,7 +27,9 @@ doc: all
 	echo '.def { background: #f9f9de; }' >> _build/odoc.css
 
 upload-doc: doc
-	scp -C -r _build/src/API.docdir/ $(WEB)/
+	scp -C -r _build/root1d/Root1D/ $(WEB)/doc
+	scp -C _build/odoc.css $(WEB)/
+
 lint:
 	opam lint root1d.opam
 
