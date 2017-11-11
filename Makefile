@@ -1,4 +1,4 @@
-# This Makefile is intended for developers.  Users simply use OASIS.
+# This Makefile is intended for developers.  Users simply use jbuilder.
 WEB = san@math.umons.ac.be:public_html/software
 
 PKGVERSION = $(shell git describe --always --dirty)

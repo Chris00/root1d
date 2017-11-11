@@ -14,7 +14,7 @@ The easier way of installing this package is by using [opam][]:
 opam install root1d
 ```
 
-To compile by hand, install [jbuilder][] and do `jbuilder build`.
+To compile by hand, install [jbuilder][] and do `jbuilder build @install`.
 
 
 [opam]: https://opam.ocaml.org/

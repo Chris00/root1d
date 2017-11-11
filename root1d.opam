@@ -16,8 +16,6 @@ build-test: [[ "jbuilder" "runtest" "-p" name "-j" jobs ]]
 depends: [
   "ocamlfind" {build}
   "jbuilder"  {build & >="1.0+beta9"}
-]
-depopts: [
-  "benchmark"
+  "benchmark" {test}
 ]
 available: [ ocaml-version >= "4.02.0" ]
