@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/0y4lccfjpm8s5bgg?svg=true)](https://ci.appveyor.com/project/Chris00/root1d)
+
 Root1D — Find roots of 1D functions
 ===================================
 
