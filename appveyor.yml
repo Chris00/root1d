@@ -10,5 +10,6 @@ install:
 
 build_script:
   - cd "%APPVEYOR_BUILD_FOLDER%"
-  - jbuilder subst
-  - jbuilder build -p root1d
+  - dune subst
+  - dune build -p root1d
+  - dune runtest

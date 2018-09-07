@@ -16,14 +16,14 @@ The easier way of installing this package is by using [opam][]:
 opam install root1d
 ```
 
-To compile by hand, install [jbuilder][] and do `jbuilder build @install`.
+To compile by hand, install [dune][] and do `dune build @install`.
 
 
 [opam]: https://opam.ocaml.org/
-[jbuilder]: https://github.com/janestreet/jbuilder
+[dune]: https://github.com/ocaml/dune
 
 Documentation
 -------------
 
 See the [signature of `Root1D`](src/Root1D.mli).  It can also be
-consulted rendered to [HTML](http://math.umons.ac.be/an/software/doc/Root1D/).
+consulted rendered to [HTML](https://chris00.github.io/root1d/doc/).

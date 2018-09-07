@@ -1,3 +1,9 @@
+0.5.1 2018-09-07
+----------------
+
+- Use [Dune](https://github.com/ocaml/dune) and
+  [dune-release](https://github.com/samoht/dune-release).
+
 0.5 2017-08-14
 --------------
 
