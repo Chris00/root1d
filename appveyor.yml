@@ -1,15 +1,14 @@
+platform:
+  - x86
 
 environment:
-  matrix:
-    - OCAML_BRANCH: 4.05
-    - OCAML_BRANCH: 4.06
+  PACKAGE: root1d
+  FORK_USER: ocaml
+  FORK_BRANCH: master
+  CYG_ROOT: C:\cygwin64
 
 install:
-  - appveyor DownloadFile "https://raw.githubusercontent.com/Chris00/ocaml-appveyor/master/install_ocaml.cmd" -FileName "C:\install_ocaml.cmd"
-  - C:\install_ocaml.cmd
+  - ps: iex ((new-object net.webclient).DownloadString("https://raw.githubusercontent.com/$env:FORK_USER/ocaml-ci-scripts/$env:FORK_BRANCH/appveyor-install.ps1"))
 
 build_script:
-  - cd "%APPVEYOR_BUILD_FOLDER%"
-  - dune subst
-  - dune build -p root1d
-  - dune runtest
+  - call %CYG_ROOT%\bin\bash.exe -l %APPVEYOR_BUILD_FOLDER%\appveyor-opam.sh
