@@ -31,6 +31,8 @@ let max_float (a: float) (b: float) =
   if a >= b then a (* ≠ NaN *)
   else b
 
+let is_not_finite (x: float) = (x -. x <> 0.)
+
 (* Assume fa = f(a) < 0 < fb = f(b).  A recursive function is more
    elegant but we do it imperatively to allow the compiler to unbox
    the floats. *)
@@ -174,6 +176,10 @@ let illinois ?eps f a b =
 
    See also www.physics.mcgill.ca/~patscott/teaching/numeric/Lec%203.pdf *)
 let brent ?(tol=eps) f a0 b0 =
+  if is_not_finite a0 then
+    invalid_arg (sprintf "Root1D.brent: a = %g must be finite" a0);
+  if is_not_finite b0 then
+    invalid_arg (sprintf "Root1D.brent: b = %g must be finite" b0);
   let a = ref a0
   and b = ref b0
   and c = ref a0 in
@@ -184,6 +190,10 @@ let brent ?(tol=eps) f a0 b0 =
   else if !fb = 0. then !b
   else if !fa *. !fb > 0. then
     invalid_arg "Root1D.brent: f(a) and f(b) must have opposite signs"
+  else if is_not_finite !fa then
+    invalid_arg(sprintf "Root1D.brent: f(%g) = %g must be finite" !a !fa)
+  else if is_not_finite !fb then
+    invalid_arg(sprintf "Root1D.brent: f(%g) = %g must be finite" !b !fb)
   else (
     let continue = ref true in
     while !continue do
@@ -225,6 +235,8 @@ let brent ?(tol=eps) f a0 b0 =
           (* Adjust the step to be not less than tolerance *)
           b := !b +. copysign tol_act c_b;
         fb := f(!b);
+        if is_not_finite !fb then
+          invalid_arg(sprintf "Root1D.brent: f(%g) = %g must be finite" !b !fb);
         (* Adjust c for it to have a sign opposite to that of b *)
         if !fb *. !fc > 0. then (
           c := !a;  fc := !fa;
