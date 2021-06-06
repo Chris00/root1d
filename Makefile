@@ -10,6 +10,11 @@ test runtest: build
 install uninstall:
 	dune $@
 
+pin:
+	opam pin add -k path root1d.dev .
+unpin:
+	opam pin remove root1d
+
 doc:
 	sed -e 's/%%VERSION%%/$(PKGVERSION)/' src/Root1D.mli \
 	  > _build/default/src/Root1D.mli
@@ -24,4 +29,5 @@ clean:
 	$(RM) $(PKG_TARBALL)
 	$(RM) $(wildcard *~ *.pdf *.ps *.png *.svg)
 
-.PHONY: build byte native test runtest install uninstall doc lint clean
+.PHONY: build byte native test runtest install uninstall pin unpin \
+	doc lint clean
