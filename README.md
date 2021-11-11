@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/Chris00/root1d.svg?branch=master)](https://travis-ci.org/Chris00/root1d)
-[![Build status](https://ci.appveyor.com/api/projects/status/0y4lccfjpm8s5bgg?svg=true)](https://ci.appveyor.com/project/Chris00/root1d)
+![Continuous Integration](https://github.com/Chris00/root1d/actions/workflows/main.yml/badge.svg)
 
 Root1D — Find roots of 1D functions
 ===================================
